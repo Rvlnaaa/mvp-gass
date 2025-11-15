@@ -1,93 +1,148 @@
 import 'package:flutter/material.dart';
+import 'package:makanan/models/dummy_resep.dart';
+import 'package:makanan/models/resep.dart';
+import 'package:makanan/screens/detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  final List<Map<String, String>> resepList;
-
-  const SearchScreen({super.key, required this.resepList});
+  const SearchScreen({super.key});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  String query = "";
-  List<Map<String, String>> hasilPencarian = [];
-
-  @override
-  void initState() {
-    super.initState();
-    hasilPencarian = widget.resepList; // awal: tampilkan semua
-  }
-
-  void updateSearch(String text) {
-    setState(() {
-      query = text;
-      hasilPencarian = widget.resepList.where((resep) {
-        final nama = resep['nama']!.toLowerCase();
-        final kategori = resep['kategori']!.toLowerCase();
-        return nama.contains(query.toLowerCase()) ||
-            kategori.contains(query.toLowerCase());
-      }).toList();
-    });
-  }
+  List<Recipe> _filteredResep = dummyResep;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cari Resep Masakan"),
-        backgroundColor: Colors.green,
+        title: const Text("Pencarian Resep"),
+        backgroundColor: Colors.orange,
       ),
+
       body: Column(
         children: [
-          // TextField untuk pencarian
           Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              onChanged: updateSearch,
-              decoration: InputDecoration(
-                hintText: 'Cari nama resep atau kategori...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.orange[50],
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _filteredResep = dummyResep.where((resep) {
+                      final name = resep.title.toLowerCase();
+                      final query = value.toLowerCase();
+                      return name.contains(query);
+                    }).toList();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Cari resep...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _filteredResep = dummyResep;
+                            });
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
             ),
           ),
 
-          // Hasil pencarian
           Expanded(
-            child: hasilPencarian.isEmpty
+            child: _filteredResep.isEmpty
                 ? const Center(
-                    child: Text("Tidak ada hasil."),
+                    child: Text(
+                      "Resep tidak ditemukan",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
                   )
                 : ListView.builder(
-                    itemCount: hasilPencarian.length,
-                    itemBuilder: (context, index) {
-                      final resep = hasilPencarian[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        child: ListTile(
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              resep['gambar']!,
-                              height: 60,
-                              width: 60,
-                              fit: BoxFit.cover,
+                    itemCount: _filteredResep.length,
+                    itemBuilder: (_, index) {
+                      final resep = _filteredResep[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => DetailScreen(recipe: resep),
                             ),
+                          );
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 6),
+                          child: Row(
+                            children: [
+                              Hero(
+                                tag: resep.imageUrl,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  width: 100,
+                                  height: 100,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.asset(
+                                      resep.imageUrl,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        resep.title,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 6),
+
+                                      Text(
+                                        resep.description,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          title: Text(resep['nama']!),
-                          subtitle: Text(resep['kategori']!),
-                          onTap: () {
-                            // arahkan ke detail resep
-                          },
                         ),
                       );
                     },
                   ),
-          )
+          ),
         ],
       ),
     );

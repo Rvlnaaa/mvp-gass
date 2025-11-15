@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:makanan/models/dummy_resep.dart';
 import 'package:makanan/screens/detail_screen.dart';
+import 'package:makanan/screens/search_screen.dart'; // 🔍 TAMBAHKAN IMPORT INI
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,10 +27,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // =========================
+      // APPBAR + TOMBOL SEARCH
+      // =========================
       appBar: AppBar(
         title: const Text("Resepku"),
         backgroundColor: Colors.brown,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchScreen()),
+              );
+            },
+          )
+        ],
       ),
+
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -73,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
+
           // dot indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

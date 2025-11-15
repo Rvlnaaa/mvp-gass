@@ -12,4 +12,4 @@ class Recipe {
     required this.ingredients,
     required this.steps,
   });
-}
+} 
