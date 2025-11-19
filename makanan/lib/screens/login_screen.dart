@@ -98,7 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.brown,
                       padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 60),
+                        vertical: 15,
+                        horizontal: 60,
+                      ),
                     ),
                     onPressed: () {
                       String name = nameController.text.trim();
@@ -107,8 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (name.isEmpty || pass.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content:
-                                  Text("Nama dan password harus diisi")),
+                            content: Text("Nama dan password harus diisi"),
+                          ),
                         );
                         return;
                       }
@@ -128,10 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text(
                       "Belum punya akun? Register",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],

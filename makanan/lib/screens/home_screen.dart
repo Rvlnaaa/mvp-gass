@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:makanan/models/dummy_resep.dart';
+import 'package:makanan/models/favorite.dart';
 import 'package:makanan/screens/detail_screen.dart';
 import 'package:makanan/screens/search_screen.dart'; // 🔍 TAMBAHKAN IMPORT INI
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required List<int> favorites});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // semua resep awalnya tidak loved
-    _isLoved = List.generate(dummyResep.length, (_) => false);
+    _isLoved = List.generate(dummyResep.length, (i) => Favorite.isFavorite(i));
   }
 
   @override
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (_) => const SearchScreen()),
               );
             },
-          )
+          ),
         ],
       ),
 
@@ -142,9 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => DetailScreen(recipe: recipe),
-          ),
+          MaterialPageRoute(builder: (_) => DetailScreen(recipe: recipe)),
         );
       },
       child: Column(
@@ -154,10 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             aspectRatio: 3 / 4,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                recipe.imageUrl,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(recipe.imageUrl, fit: BoxFit.cover),
             ),
           ),
           const SizedBox(height: 8),
@@ -169,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   recipe.title,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),
@@ -177,12 +175,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   setState(() {
                     _isLoved[index] = !_isLoved[index];
+                    Favorite.toggleFavorite(index);
                   });
                 },
                 child: Icon(
-                  _isLoved[index]
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+                  _isLoved[index] ? Icons.favorite : Icons.favorite_border,
                   color: Colors.red,
                   size: 20,
                 ),

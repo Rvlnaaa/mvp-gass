@@ -18,12 +18,9 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-            Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.2),
-              ),
-            ),
-          
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.2)),
+          ),
 
           // =====================
           // Form register di tengah layar
@@ -37,9 +34,10 @@ class RegisterScreen extends StatelessWidget {
                   const Text(
                     "Register",
                     style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   const SizedBox(height: 30),
 
@@ -64,10 +62,7 @@ class RegisterScreen extends StatelessWidget {
                   // Email
                   const Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Email",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Email", style: TextStyle(color: Colors.white)),
                   ),
                   TextField(
                     decoration: InputDecoration(
@@ -102,7 +97,9 @@ class RegisterScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.brown,
                       padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 60),
+                        vertical: 15,
+                        horizontal: 60,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, '/login');

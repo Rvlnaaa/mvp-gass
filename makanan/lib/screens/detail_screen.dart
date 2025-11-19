@@ -9,10 +9,7 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(recipe.title),
-        backgroundColor: Colors.brown,
-      ),
+      appBar: AppBar(title: Text(recipe.title), backgroundColor: Colors.brown),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -23,10 +20,7 @@ class DetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: Image.asset(
-                  recipe.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.asset(recipe.imageUrl, fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 20),
@@ -34,8 +28,7 @@ class DetailScreen extends StatelessWidget {
             // Title & description
             Text(
               recipe.title,
-              style: const TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
@@ -80,11 +73,15 @@ class DetailScreen extends StatelessWidget {
               icon: const Icon(Icons.favorite_outline),
               label: const Text("Favorit"),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
+                backgroundColor: Colors.brown,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
           ],
         ),

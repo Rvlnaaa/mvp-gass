@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:makanan/models/favorite.dart';
+import 'package:makanan/screens/favorite_screen.dart';
 import 'settings_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
   final Function(bool) toggleTheme;
+  final List<int> favorites; // ✔ sudah benar
 
-  ProfilScreen({required this.toggleTheme});
+  ProfilScreen({required this.toggleTheme, required this.favorites});
 
   @override
   _ProfilScreenState createState() => _ProfilScreenState();
@@ -31,8 +34,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
               ),
             ),
             SizedBox(height: 16),
-            Text(profileName, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(profileEmail, style: TextStyle(fontSize: 16, color: Colors.grey)),
+            Text(
+              profileName,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              profileEmail,
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
             SizedBox(height: 30),
             Card(
               child: Column(
@@ -61,21 +70,33 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     },
                   ),
                   Divider(height: 1),
+
+                  // ✔ BAGIAN FAVORIT — SUDAH BENAR
                   ListTile(
                     leading: Icon(Icons.favorite),
                     title: Text("Favorit"),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Halaman Favorit (contoh)")),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FavoriteScreen(
+                            favorites: Favorite.getFavorites(),
+                          ),
+                        ),
                       );
                     },
                   ),
+
                   Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Logout"),
                     onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/login',
+                        (route) => false,
+                      );
                     },
                   ),
                 ],
