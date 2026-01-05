@@ -1,60 +1,141 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:makanan/models/favorite.dart';
-import 'package:makanan/screens/favorite_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'settings_screen.dart';
+import 'favorite_screen.dart'; // 🔥 tambahkan import ini
 
 class ProfilScreen extends StatefulWidget {
-  final Function(bool) toggleTheme;
-  final List<int> favorites; // ✔ sudah benar
-
-  ProfilScreen({required this.toggleTheme, required this.favorites});
+  const ProfilScreen({super.key});
 
   @override
-  _ProfilScreenState createState() => _ProfilScreenState();
+  State<ProfilScreen> createState() => _ProfilScreenState();
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
   String profileName = "Dian Hasanah";
   String profileEmail = "dianhasanah@gmail.com";
-  String profileImage =
-      "https://tse3.mm.bing.net/th/id/OIP.ejaCX30eXrYZiIMOwXtQ3QHaHa?pid=Api&P=0&h=220";
+
+  String? profileImageBase64; // 🔥 tempat foto yang disimpan local
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfileData();
+  }
+
+  // 🔥 ambil semua data (nama, email, foto)
+  Future<void> loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      profileName = prefs.getString("name") ?? profileName;
+      profileEmail = prefs.getString("email") ?? profileEmail;
+      profileImageBase64 = prefs.getString("profile_image");
+    });
+  }
+
+  // 🔥 simpan nama, email
+  Future<void> saveProfile(String name, String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("name", name);
+    await prefs.setString("email", email);
+  }
+
+  // 🔥 pilih foto & simpan ke SharedPreferences
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final XFile? img = await picker.pickImage(source: ImageSource.gallery);
+
+    if (img == null) return;
+
+    final bytes = await img.readAsBytes();
+    final base64String = base64Encode(bytes);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("profile_image", base64String);
+
+    setState(() {
+      profileImageBase64 = base64String;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider avatarImage;
+
+    // 🔥 jika ada foto dari SharedPreferences
+    if (profileImageBase64 != null) {
+      avatarImage = MemoryImage(base64Decode(profileImageBase64!));
+    } else {
+      // 🔥 default foto lama kamu
+      avatarImage = NetworkImage(
+        "https://tse3.mm.bing.net/th/id/OIP.ejaCX30eXrYZiIMOwXtQ3QHaHa?pid=Api&P=0&h=220",
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: Text("Profil")),
+      appBar: AppBar(title: const Text("Profil")),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // FOTO PROFIL
             Center(
-              child: CircleAvatar(
-                radius: 55,
-                backgroundImage: NetworkImage(profileImage),
+              child: Stack(
+                children: [
+                  CircleAvatar(radius: 60, backgroundImage: avatarImage),
+
+                  // 🔥 tombol edit foto di pojok
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: pickImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 16),
+
+            const SizedBox(height: 16),
+
             Text(
               profileName,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+
             Text(
               profileEmail,
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 30),
+
+            const SizedBox(height: 30),
+
+            // LIST MENU
             Card(
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text("Pengaturan"),
+                    leading: const Icon(Icons.settings),
+                    title: const Text("Pengaturan"),
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SettingScreen(
-                            toggleTheme: widget.toggleTheme,
+                          builder: (_) => SettingScreen(
                             name: profileName,
                             email: profileEmail,
                           ),
@@ -66,31 +147,34 @@ class _ProfilScreenState extends State<ProfilScreen> {
                           profileName = result["name"]!;
                           profileEmail = result["email"]!;
                         });
+
+                        saveProfile(profileName, profileEmail);
                       }
                     },
                   ),
-                  Divider(height: 1),
 
-                  // ✔ BAGIAN FAVORIT — SUDAH BENAR
+                  const Divider(height: 1),
+
+                  // ❤️ FAVORIT - SUDAH DIUBAH
                   ListTile(
-                    leading: Icon(Icons.favorite),
-                    title: Text("Favorit"),
+                    leading: const Icon(Icons.favorite),
+                    title: const Text("Favorit"),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => FavoriteScreen(
-                            favorites: Favorite.getFavorites(),
-                          ),
+                          builder: (_) =>
+                              const FavoriteScreen(), // 🔥 pindah halaman
                         ),
                       );
                     },
                   ),
 
-                  Divider(height: 1),
+                  const Divider(height: 1),
+
                   ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text("Logout"),
+                    leading: const Icon(Icons.exit_to_app),
+                    title: const Text("Logout"),
                     onTap: () {
                       Navigator.pushNamedAndRemoveUntil(
                         context,

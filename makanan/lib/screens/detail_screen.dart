@@ -59,30 +59,6 @@ class DetailScreen extends StatelessWidget {
                 .toList(),
 
             const SizedBox(height: 30),
-            // Contoh tombol opsional (misal “Tambahkan ke Favorit”)
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Resep ditambahkan ke favorit!'),
-                    duration: Duration(seconds: 2),
-                    backgroundColor: Colors.brown,
-                  ),
-                );
-              },
-              icon: const Icon(Icons.favorite_outline),
-              label: const Text("Favorit"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
           ],
         ),
       ),
